@@ -1,0 +1,20 @@
+{
+  "name": "timmy",
+  "version": "1.0.0",
+  "description": "Time chart for Ubersicht",
+  "keywords": [
+    "ubersicht"
+  ],
+  "license": "ISC",
+  "author": "Michał Świtoń <switonmichal@gmail.com>",
+  "type": "commonjs",
+  "main": "index.jsx",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "d3": "^6.7.0",
+    "d3fc": "^15.2.13",
+    "date-fns": "^3.6.0"
+  }
+}
