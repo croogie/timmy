@@ -1,21 +1,25 @@
-import * as d3 from "d3";
 import { React } from "uebersicht";
-import useInterval from "../hooks/useInterval";
 import useBbox from "../hooks/useBbox";
 import Axis from "./axis.jsx";
 import EventsList from "./eventsList.jsx";
 
-const { useState, useRef } = React;
-
-const grabEvents = () => {
-  return [];
-};
+const { useState, useEffect } = React;
 
 export function Component({ width, height }) {
   const [bbox, ref] = useBbox();
 
   const maxWidth = bbox?.width ?? 0;
   const maxHeight = bbox?.height ?? 0;
+
+  const [now, setNow] = useState(() => new Date());
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setNow(new Date());
+    }, 60000);
+
+    return () => clearInterval(id);
+  }, []);
 
   return (
     <svg
@@ -30,8 +34,8 @@ export function Component({ width, height }) {
     >
       {maxHeight > 0 && (
         <>
-          <Axis height={maxHeight} />
-          <EventsList height={maxHeight} events={[]} />
+          <Axis height={maxHeight} now={now} width={maxWidth} />
+          <EventsList height={maxHeight} now={now} width={maxWidth} />
         </>
       )}
     </svg>
