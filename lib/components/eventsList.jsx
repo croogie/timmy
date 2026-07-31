@@ -61,6 +61,8 @@ export default function EventsList({ width, height, now }) {
       return `translate(${x},${y})`;
     });
 
+  eventGroups.selectAll("*").remove();
+
   eventGroups
     .append("rect")
     .attr("rx", 8)
