@@ -56,6 +56,7 @@ There are no repo-defined build or lint scripts.
 ## Testing & QA
 - There is no automated test suite in the repo today.
 - `npm test` is only a placeholder and will fail by design.
+- To inspect the rendered widget, open `http://127.0.0.1:41416/` and read the element with ID `timmy-index-jsx`.
 - For behavior changes, manually verify the widget in Uebersicht, especially:
   - event fetching in `lib/gcal.js`
   - event packing in `lib/calendar-events-layout.js`

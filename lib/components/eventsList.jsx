@@ -7,6 +7,16 @@ import * as d3 from "d3";
 
 const { useEffect, useRef, useState } = React;
 
+function colorWithOpacity(color, opacity) {
+  const parsed = d3.color(color);
+  if (!parsed) {
+    return color;
+  }
+
+  parsed.opacity = opacity;
+  return parsed.formatRgb();
+}
+
 export default function EventsList({ width, height, now }) {
   const [positionedEvents, setPositionedEvents] = useState(() => []);
   const ref = useRef();
@@ -65,13 +75,18 @@ export default function EventsList({ width, height, now }) {
     )
     .attr("stroke", (positioned) => positioned.event.color)
     .attr("stroke-width", 3)
-    .attr("fill", "transparent");
+    .attr("fill", (positioned) => colorWithOpacity(positioned.event.color, 0.2))
+    .attr(
+      "style",
+      "backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);",
+    );
 
   eventGroups
     .append("text")
     .attr("class", "event-title")
     .attr("x", 10)
     .attr("y", 21)
+    .attr("fill", "#fff")
     .text((positioned) => positioned.event.title);
 
   const formatTime = d3.timeFormat("%H:%M");
@@ -81,6 +96,8 @@ export default function EventsList({ width, height, now }) {
     .attr("class", "event-time")
     .attr("x", 10)
     .attr("y", 39)
+    .attr("fill", "#fff")
+    .attr("fill-opacity", 0.5)
     .text(
       (positioned) =>
         `${formatTime(positioned.event.start)}–${formatTime(
