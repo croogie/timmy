@@ -1,9 +1,10 @@
 import { React } from "uebersicht";
 import useBbox from "../hooks/useBbox";
+import useTimeWindow from "../hooks/useTimeWindow";
 import Axis from "./axis.jsx";
 import EventsList from "./eventsList.jsx";
 
-const { useState, useEffect } = React;
+const { useCallback, useEffect, useState } = React;
 
 export function Component({ width, height }) {
   const [bbox, ref] = useBbox();
@@ -21,10 +22,35 @@ export function Component({ width, height }) {
     return () => clearInterval(id);
   }, []);
 
+  const {
+    end: windowEnd,
+    reset,
+    scrollBy,
+    start: windowStart,
+    timeScale,
+  } = useTimeWindow({
+    height: maxHeight > 0 ? maxHeight : 1,
+    now,
+  });
+
+  const handleWheel = useCallback(
+    (event) => {
+      event.preventDefault();
+      scrollBy(event.deltaY < 0 ? -10 : 10);
+    },
+    [scrollBy],
+  );
+
+  const handleDoubleClick = useCallback(() => {
+    reset();
+  }, [reset]);
+
   return (
     <svg
       viewBox={`0 0 ${maxWidth} ${maxHeight}`}
       ref={ref}
+      onDoubleClick={handleDoubleClick}
+      onWheel={handleWheel}
       style={{
         display: "flex",
         flex: 1,
@@ -34,8 +60,15 @@ export function Component({ width, height }) {
     >
       {maxHeight > 0 && (
         <>
-          <Axis height={maxHeight} now={now} width={maxWidth} />
-          <EventsList height={maxHeight} now={now} width={maxWidth} />
+          <Axis
+            height={maxHeight}
+            now={now}
+            timeScale={timeScale}
+            width={maxWidth}
+            windowEnd={windowEnd}
+            windowStart={windowStart}
+          />
+          <EventsList timeScale={timeScale} width={maxWidth} />
         </>
       )}
     </svg>

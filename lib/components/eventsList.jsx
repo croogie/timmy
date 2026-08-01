@@ -1,7 +1,6 @@
 import { React } from "uebersicht";
 import { layoutCalendarEvents } from "../calendar-events-layout.js";
 import { getRawEvents } from "../gcal.js";
-import { settings } from "../settings.js";
 
 import * as d3 from "d3";
 
@@ -17,13 +16,12 @@ function colorWithOpacity(color, opacity) {
   return parsed.formatRgb();
 }
 
-export default function EventsList({ width, height, now }) {
+export default function EventsList({ timeScale, width }) {
   const [positionedEvents, setPositionedEvents] = useState(() => []);
   const ref = useRef();
 
   useEffect(() => {
     async function loadData() {
-      console.log("checking events...");
       const events = await getRawEvents();
       setPositionedEvents(layoutCalendarEvents(events));
     }
@@ -31,22 +29,9 @@ export default function EventsList({ width, height, now }) {
     loadData();
   }, []);
 
-  console.log("rerender EventsList", positionedEvents);
-
   const margin = { left: 50, right: 10, top: 10, bottom: 10 };
   const availableWidth = width - margin.left - margin.right;
-  const availableHeight = height - margin.top - margin.bottom;
   const horizontalGap = 4;
-
-  const currentHour = now;
-  const currentRoundedHour = d3.timeHour.floor(now);
-  const start = d3.timeHour.offset(currentHour, -settings.timeBefore);
-  const end = d3.timeHour.offset(currentHour, settings.timeAfter);
-
-  const timeScale = d3
-    .scaleTime()
-    .domain([start, end])
-    .range([margin.top, height - margin.bottom]);
 
   const svg = d3.select(ref.current);
 
