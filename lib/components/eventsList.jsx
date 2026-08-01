@@ -3,6 +3,7 @@ import { layoutCalendarEvents } from "../calendar-events-layout.js";
 import { getRawEvents } from "../gcal.js";
 
 import * as d3 from "d3";
+import { isBefore, isAfter } from "date-fns";
 
 const { useEffect, useRef, useState } = React;
 
@@ -60,12 +61,32 @@ export default function EventsList({ timeScale, width }) {
       (positioned) =>
         timeScale(positioned.event.end) - timeScale(positioned.event.start),
     )
-    .attr("stroke", (positioned) => positioned.event.color)
-    .attr("stroke-width", 3)
-    .attr("fill", (positioned) => colorWithOpacity(positioned.event.color, 0.2))
-    .attr(
-      "style",
-      "backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);",
+    .attr("stroke", ({ event }) => {
+      if (isBefore(event.end, new Date())) {
+        return "grey";
+      }
+      return event.color;
+    })
+    .attr("stroke-width", (positioned) => {
+      const { start, end } = positioned.event;
+      const now = new Date();
+
+      if (isBefore(start, now)) {
+        if (isAfter(end, now)) {
+          // in progress
+          return 3;
+        }
+      }
+
+      return 1;
+    })
+    .attr("fill", ({ event }) =>
+      colorWithOpacity(
+        isBefore(event.end, new Date()) ? "grey" : event.color,
+        isBefore(event.start, new Date()) && isAfter(event.end, new Date())
+          ? 0.8
+          : 0.2,
+      ),
     );
 
   eventGroups
@@ -73,7 +94,9 @@ export default function EventsList({ timeScale, width }) {
     .attr("class", "event-title")
     .attr("x", 10)
     .attr("y", 21)
-    .attr("fill", "#fff")
+    .attr("fill", ({ event }) =>
+      colorWithOpacity("#fff", isBefore(event.end, new Date()) ? 0.5 : 1),
+    )
     .text((positioned) => positioned.event.title);
 
   const formatTime = d3.timeFormat("%H:%M");
@@ -81,13 +104,14 @@ export default function EventsList({ timeScale, width }) {
   eventGroups
     .append("text")
     .attr("class", "event-time")
+    .attr("font-size", "12")
     .attr("x", 10)
     .attr("y", 39)
     .attr("fill", "#fff")
     .attr("fill-opacity", 0.5)
     .text(
       (positioned) =>
-        `${formatTime(positioned.event.start)}–${formatTime(
+        `${formatTime(positioned.event.start)} – ${formatTime(
           positioned.event.end,
         )}`,
     );

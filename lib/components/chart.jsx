@@ -2,6 +2,7 @@ import { React } from "uebersicht";
 import useBbox from "../hooks/useBbox";
 import useTimeWindow from "../hooks/useTimeWindow";
 import Axis from "./axis.jsx";
+import CurrentTimeMarker from "./currentTimeMarker.jsx";
 import EventsList from "./eventsList.jsx";
 
 const { useCallback, useEffect, useState } = React;
@@ -69,6 +70,11 @@ export function Component({ width, height }) {
             windowStart={windowStart}
           />
           <EventsList timeScale={timeScale} width={maxWidth} />
+          <CurrentTimeMarker
+            now={now}
+            timeScale={timeScale}
+            width={maxWidth}
+          />
         </>
       )}
     </svg>
