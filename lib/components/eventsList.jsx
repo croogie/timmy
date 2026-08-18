@@ -4,8 +4,9 @@ import { getRawEvents } from "../gcal.js";
 
 import * as d3 from "d3";
 import { isBefore, isAfter } from "date-fns";
+import useInterval from "../hooks/useInterval.js";
 
-const { useEffect, useRef, useState } = React;
+const { useRef, useState } = React;
 
 function colorWithOpacity(color, opacity) {
   const parsed = d3.color(color);
@@ -21,14 +22,13 @@ export default function EventsList({ timeScale, width }) {
   const [positionedEvents, setPositionedEvents] = useState(() => []);
   const ref = useRef();
 
-  useEffect(() => {
-    async function loadData() {
-      const events = await getRawEvents();
-      setPositionedEvents(layoutCalendarEvents(events));
-    }
+  async function loadData() {
+    const events = await getRawEvents();
+    setPositionedEvents(layoutCalendarEvents(events));
+  }
 
-    loadData();
-  }, []);
+  // redownload data every 10 minutes
+  useInterval(loadData, 1000 * 60 * 10);
 
   const margin = { left: 50, right: 10, top: 10, bottom: 10 };
   const availableWidth = width - margin.left - margin.right;
@@ -87,7 +87,9 @@ export default function EventsList({ timeScale, width }) {
           ? 0.8
           : 0.2,
       ),
-    );
+    )
+    .style("backdrop-filter", "blur(18px)")
+    .style("-webkit-backdrop-filter", "blur(18px)");
 
   eventGroups
     .append("text")
@@ -95,7 +97,7 @@ export default function EventsList({ timeScale, width }) {
     .attr("x", 10)
     .attr("y", 21)
     .attr("fill", ({ event }) =>
-      colorWithOpacity("#fff", isBefore(event.end, new Date()) ? 0.5 : 1),
+      colorWithOpacity("#fff", isBefore(event.end, new Date()) ? 0.8 : 1),
     )
     .text((positioned) => positioned.event.title);
 

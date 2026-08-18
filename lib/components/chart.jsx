@@ -55,8 +55,8 @@ export function Component({ width, height }) {
       style={{
         display: "flex",
         flex: 1,
-        backdropFilter: "blur(18px)",
-        WebkitBackdropFilter: "blur(18px)",
+        // backdropFilter: "blur(18px)",
+        // WebkitBackdropFilter: "blur(18px)",
       }}
     >
       {maxHeight > 0 && (
@@ -70,11 +70,7 @@ export function Component({ width, height }) {
             windowStart={windowStart}
           />
           <EventsList timeScale={timeScale} width={maxWidth} />
-          <CurrentTimeMarker
-            now={now}
-            timeScale={timeScale}
-            width={maxWidth}
-          />
+          <CurrentTimeMarker now={now} timeScale={timeScale} width={maxWidth} />
         </>
       )}
     </svg>
