@@ -5,6 +5,8 @@ import { differenceInSeconds } from "date-fns";
 import { React } from "uebersicht";
 
 import { settings } from "../settings.js";
+import { addTickLabelBackgrounds } from "./tickLabelBackgrounds.js";
+
 
 const { useEffect, useRef } = React;
 
@@ -78,8 +80,9 @@ export default function Axis({
             settings.timeAfter,
           ),
         );
+        selection.style("pointer-events", "none");
 
-        selection.select("text").style("fill", "#fff").style("font-size", 10);
+        selection.select("text").style("fill", "#000").style("font-size", 10);
 
         selection.select("path").style("stroke", "#fff");
       })
@@ -90,15 +93,16 @@ export default function Axis({
 
     const source = d3.select(ref.current);
 
-    source
+    const axis = source
       .selectAll("g.axis")
       .data([null])
       .join("g")
       .attr("class", "axis")
       .attr("transform", `translate(${margin.left}, 0)`)
-      .call(axisGenerator)
-      .select("path")
-      .attr("stroke", "transparent");
+      .call(axisGenerator);
+
+    axis.select("path").attr("stroke", "transparent");
+    addTickLabelBackgrounds(axis.selectAll("g.tick"), "#fff");
 
     source
       .selectAll("line")

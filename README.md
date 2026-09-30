@@ -10,6 +10,8 @@ Widget [Übersicht](https://tracesof.net/uebersicht/) przedstawiający dzienny p
 - Domyślnie pokazuje 2 godziny przed obecną godziną i 4 godziny po niej. Zakres nie wykracza poza granice dnia.
 - Rozmieszcza równoległe wydarzenia w maksymalnie trzech kolumnach; wydarzenia wykorzystują wolne sąsiednie kolumny, gdy nie kolidują czasowo.
 - Wyróżnia trwające wydarzenie grubszą ramką, a zakończone rysuje na szaro.
+- Po najechaniu na pionowy pasek wydarzenia jego etykieta śledzi kursor w pionie i wyświetla się o szerokość paska po jego lewej stronie.
+- Etykiety godzin mają zaokrąglone tło: białe dla zwykłych ticków i żółte dla bieżącej godziny; tekst jest czarny.
 
 ### Sterowanie
 

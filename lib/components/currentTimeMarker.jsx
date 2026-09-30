@@ -2,6 +2,7 @@ import * as d3 from "d3";
 import * as fc from "d3fc";
 
 import { React } from "uebersicht";
+import { addTickLabelBackgrounds } from "./tickLabelBackgrounds.js";
 
 const { useEffect, useRef } = React;
 
@@ -11,7 +12,11 @@ function buildCurrentTimeAxis(timeScale, now, color) {
     .decorate((selection) => {
       selection.style("opacity", 1);
 
-      selection.select("text").style("fill", color).style("font-size", 14);
+      selection
+        .select("text")
+        .style("fill", "#000")
+        .style("font-size", 14)
+        .style("pointer-events", "none");
 
       selection.select("path").style("stroke", color).style("stroke-width", 3);
     })
@@ -40,15 +45,16 @@ export default function CurrentTimeMarker({
     const source = d3.select(ref.current);
     const axisGenerator = buildCurrentTimeAxis(timeScale, now, color);
 
-    source
+    const currentTimeAxis = source
       .selectAll("g.current-time-marker")
       .data([null])
       .join("g")
       .attr("class", "current-time-marker")
       .attr("transform", `translate(${margin.left}, 0)`)
-      .call(axisGenerator)
-      .select("path")
-      .attr("stroke", "transparent");
+      .call(axisGenerator);
+
+    currentTimeAxis.select("path").attr("stroke", "transparent");
+    addTickLabelBackgrounds(currentTimeAxis.selectAll("g.tick"), color);
 
     source
       .selectAll("line")

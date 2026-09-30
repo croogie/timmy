@@ -61,6 +61,7 @@ export function Component({ width, height }) {
     >
       {maxHeight > 0 && (
         <>
+          <EventsList timeScale={timeScale} width={maxWidth} />
           <Axis
             height={maxHeight}
             now={now}
@@ -69,7 +70,6 @@ export function Component({ width, height }) {
             windowEnd={windowEnd}
             windowStart={windowStart}
           />
-          <EventsList timeScale={timeScale} width={maxWidth} />
           <CurrentTimeMarker now={now} timeScale={timeScale} width={maxWidth} />
         </>
       )}
