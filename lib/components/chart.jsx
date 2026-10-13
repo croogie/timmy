@@ -1,5 +1,7 @@
 import { React } from "uebersicht";
 import useBbox from "../hooks/useBbox";
+import useCalendarEvents from "../hooks/useCalendarEvents";
+import useInterval from "../hooks/useInterval.js";
 import useTimeWindow from "../hooks/useTimeWindow";
 import Axis from "./axis.jsx";
 import CurrentTimeMarker from "./currentTimeMarker.jsx";
@@ -14,6 +16,10 @@ export function Component({ width, height }) {
   const maxHeight = bbox?.height ?? 0;
 
   const [now, setNow] = useState(() => new Date());
+  const { positionedEvents, refreshEvents } = useCalendarEvents();
+
+  // redownload data every 10 minutes
+  useInterval(refreshEvents, 1000 * 60 * 10);
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -43,6 +49,7 @@ export function Component({ width, height }) {
   );
 
   const handleDoubleClick = useCallback(() => {
+    refreshEvents();
     reset();
   }, [reset]);
 
@@ -61,7 +68,11 @@ export function Component({ width, height }) {
     >
       {maxHeight > 0 && (
         <>
-          <EventsList timeScale={timeScale} width={maxWidth} />
+          <EventsList
+            positionedEvents={positionedEvents}
+            timeScale={timeScale}
+            width={maxWidth}
+          />
           <Axis
             height={maxHeight}
             now={now}

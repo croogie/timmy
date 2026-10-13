@@ -1,12 +1,9 @@
 import { React } from "uebersicht";
-import { layoutCalendarEvents } from "../calendar-events-layout.js";
-import { getRawEvents } from "../gcal.js";
 
 import * as d3 from "d3";
 import { isBefore, isAfter } from "date-fns";
-import useInterval from "../hooks/useInterval.js";
 
-const { useRef, useState } = React;
+const { useRef } = React;
 
 function colorWithOpacity(color, opacity) {
   const parsed = d3.color(color);
@@ -18,17 +15,8 @@ function colorWithOpacity(color, opacity) {
   return parsed.formatRgb();
 }
 
-export default function EventsList({ timeScale, width }) {
-  const [positionedEvents, setPositionedEvents] = useState(() => []);
+export default function EventsList({ positionedEvents, timeScale, width }) {
   const ref = useRef();
-
-  async function loadData() {
-    const events = await getRawEvents();
-    setPositionedEvents(layoutCalendarEvents(events));
-  }
-
-  // redownload data every 10 minutes
-  useInterval(loadData, 1000 * 60 * 10);
 
   const margin = { left: 50, right: 10, top: 10, bottom: 10 };
   const availableWidth = width - margin.left - margin.right;
@@ -149,10 +137,16 @@ export default function EventsList({ timeScale, width }) {
         timeScale(positioned.event.end) - timeScale(positioned.event.start),
     )
     .attr("fill", ({ event }) =>
-      colorWithOpacity(event.color, isBefore(event.end, new Date()) ? 0.8 : 1),
+      isBefore(event.end, new Date())
+        ? colorWithOpacity(event.color, 0.4)
+        : event.color,
     )
     .attr("stroke", ({ event }) => event.color)
-    .attr("stroke-width", 0)
+    .attr("stroke-width", ({ event }) =>
+      isBefore(event.end, new Date()) ? 1 : 0,
+    )
+    .style("backdrop-filter", "blur(18px)")
+    .style("-webkit-backdrop-filter", "blur(18px)")
     .on("mouseenter", function (event, positioned) {
       const title = d3.select(eventLineTitleByPositioned.get(positioned));
 
